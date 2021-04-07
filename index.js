@@ -14,12 +14,6 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.get("/addProduct", (req, res) => {
-  const product = req.body;
-  products.insertOne(product);
-  res.send("Hello World!");
-});
-
 //mongodb
 
 const uri =
@@ -28,10 +22,22 @@ const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
+
 client.connect((err) => {
+
+  //Collections
   const productsCollection = client.db("t-shirt-planet").collection("products");
   const ordersCollection = client.db("t-shirt-planet").collection("orders");
 
+  //Products Database
+  app.get("/products", (req, res) => {
+    productsCollection.find().toArray((err, items) => {
+      res.send(items);
+    });
+  });
+
+  //Adding Product To Database
   app.post("/addProduct", (req, res) => {
     const newProduct = req.body;
     console.log("adding new event: ", newProduct);
@@ -41,27 +47,8 @@ client.connect((err) => {
     });
   });
 
-  app.post("/addOrder", (req, res) => {
-    const newOrder = req.body;
-    console.log("adding new event: ", newOrder);
-    ordersCollection.insertOne(newProduct).then((result) => {
-      console.log("inserted count", result.insertedCount);
-      res.send(result.insertedCount > 0);
-    });
-  });
 
-  app.get("/products", (req, res) => {
-    productsCollection.find().toArray((err, items) => {
-      res.send(items);
-    });
-  });
-
-  app.get("/products", (req, res) => {
-    productsCollection.find().toArray((err, items) => {
-      res.send(items);
-    });
-  });
-
+  //Find a Prodouct By Key
   app.get("/product/:key", (req, res) => {
     const id = ObjectID(req.params.key);
     productsCollection.find({ _id: id }).toArray((err, documents) => {
@@ -69,6 +56,8 @@ client.connect((err) => {
     });
   });
 
+
+  // Deleting a product By Admin
   app.delete("deleteProduct/:id", (req, res) => {
     const id = ObjectID(req.params.id);
     console.log("delete this", id);
@@ -76,6 +65,37 @@ client.connect((err) => {
       res.send(!!documents.value)
     );
   });
+
+
+  //Review Orders by admin
+  app.get("/orders", (req, res) => {
+    ordersCollection.find().toArray((err, items) => {
+      res.send(items);
+    });
+  });
+
+  //Adding Order by user
+  app.post("/addOrder", (req, res) => {
+    const newOrder = req.body;
+    console.log("adding new event: ", newOrder);
+    ordersCollection.insertOne(newOrder).then((result) => {
+      console.log("inserted count", result.insertedCount);
+      res.send(result.insertedCount > 0);
+    });
+  });
+
+
+
+ 
+  //To get user database by email
+
+  app.get("/order/", (req, res) => {
+    ordersCollection.find({ email: req.query.email }).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
+
 
   //   client.close();
 });

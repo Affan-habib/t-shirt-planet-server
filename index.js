@@ -57,16 +57,6 @@ client.connect((err) => {
   });
 
 
-  // Deleting a product By Admin
-  app.delete("deleteProduct/:_id", (req, res) => {
-    console.log(req.params._id)
-    const _id = ObjectID(req.params._id);
-    productsCollection.deleteOne({ _id: _id }).toArray((err, documents) =>
-      res.send(!!documents.value)
-    );
-  });
-
-
   //Review Orders by admin
   app.get("/orders", (req, res) => {
     ordersCollection.find().toArray((err, items) => {

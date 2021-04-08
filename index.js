@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
 //mongodb configurations
 
 const uri =
-  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uvcf9.mongodb.net/t-shirt-planet?retryWrites=true&w=majority`;
+  'mongodb+srv://t-shirt-planet:t-shirt-planet1234@cluster0.uvcf9.mongodb.net/t-shirt-planet?retryWrites=true&w=majority';
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -55,6 +55,7 @@ client.connect((err) => {
       res.send(documents[0]);
     });
   });
+
 
 
   //Review Orders by admin

@@ -1,10 +1,10 @@
 const express = require("express");
+const MongoClient = require("mongodb").MongoClient;
 const ObjectID = require("mongodb").ObjectID;
 require('dotenv').config()
 const app = express();
 const bodyParser = require("body-Parser");
 const cors = require("cors");
-const MongoClient = require("mongodb").MongoClient;
 const port = 5000;
 
 app.use(cors());
@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-//mongodb
+//mongodb configurations
 
 const uri =
   `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uvcf9.mongodb.net/t-shirt-planet?retryWrites=true&w=majority`;
@@ -58,10 +58,10 @@ client.connect((err) => {
 
 
   // Deleting a product By Admin
-  app.delete("deleteProduct/:id", (req, res) => {
-    const id = ObjectID(req.params.id);
-    console.log("delete this", id);
-    ProductsCollection.findOneAndDelete({ _id: id }).then((documents) =>
+  app.delete("deleteProduct/:_id", (req, res) => {
+    console.log(req.params._id)
+    const _id = ObjectID(req.params._id);
+    productsCollection.deleteOne({ _id: _id }).toArray((err, documents) =>
       res.send(!!documents.value)
     );
   });
@@ -83,8 +83,6 @@ client.connect((err) => {
       res.send(result.insertedCount > 0);
     });
   });
-
-
 
  
   //To get user database by email
